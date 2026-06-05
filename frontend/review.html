@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VR Room Setup</title>
+
+    <link rel="stylesheet" href="./public/styles/main.css">
+    <link rel="stylesheet" href="./public/styles/review.css">
+
+    <script type="module" src="./src/wsbridge.js" defer></script>
+    <script type="module" src="./src/main.js" defer></script>
+    <script type="module" src="./src/review.js" defer></script>
+    <script type="application/javascript">
+        var global = window;
+    </script>
+</head>
+
+<body>
+
+<div class="background-grid"></div>
+
+<div class="center-wrapper">
+
+    <div class="scan-header">
+        <div class="stepper">
+            <div class="step done">
+                <div class="step-circle">1</div>
+                <div class="step-label">Start</div>
+            </div>
+
+            <div class="step-line done"></div>
+
+            <div class="step done">
+                <div class="step-circle">2</div>
+                <div class="step-label">Create Virtual Room</div>
+            </div>
+
+            <div class="step-line done"></div>
+
+            <div class="step current">
+                <div class="step-circle">3</div>
+                <div class="step-label">Environment Ready</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="reviewScreen" class="scan-card">
+
+        <div class="wizard-step-header">
+            <h1>Environment Ready</h1>
+            <p class="subtitle">Review detected anchors and confirm synchronization</p>
+        </div>
+
+        <div class="world-preview">
+            <div id="anchorPreviewCanvas" class="anchor-preview-canvas"></div>
+        </div>
+
+        <div class="wizard-layout two-col">
+
+            <div class="wizard-column-left">
+                <div class="panel">
+
+
+                    <h2>Anchors Preview</h2>
+
+                    <div class="anchors-table-wrap">
+                        <table class="anchors-table">
+                            <thead>
+                            <tr>
+                                <th>Anchor</th>
+                                <th>X</th>
+                                <th>Y</th>
+                                <th>Z</th>
+                            </tr>
+                            </thead>
+                            <tbody id="anchorsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h3>Summary</h3>
+                    <div class="summary-list">
+                        <div class="summary-row">
+                            <span class="summary-label">Detected anchors</span>
+                            <span id="summaryAnchorCount" class="summary-value">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wizard-column-right">
+
+                <div class="panel vr-panel">
+                    <h2>LPS Sync Status</h2>
+
+                    <div class="sync-indicator-wrap">
+                        <div id="syncIndicator" class="sync-indicator idle"></div>
+                        <div id="syncStatusText" class="sync-status-text">Ready to sync</div>
+                    </div>
+
+                    <div id="syncDetails" class="sync-details">
+                        No job started yet.
+                    </div>
+
+                    <div class="sync-config">
+                        <label class="config-label" for="radioUri">Crazyflie URI</label>
+
+                        <div class="agent-uri-row">
+                            <input
+                                    id="radioUri"
+                                    class="config-input"
+                                    value="radio://0/80/2M/E7E7E7E7B1"
+                            />
+
+                            <div class="info-popover">
+                                <button
+                                        id="agentHelpBtn"
+                                        class="info-icon-btn"
+                                        type="button"
+                                        aria-label="Show Crazyflie startup command"
+                                >
+                                    i
+                                </button>
+
+                                <div class="info-card">
+                                    <div class="info-card-title">Crazyflie startup command</div>
+                                    <div class="info-card-text">
+                                        Before connecting, start the websocket bridge for this Crazyflie URI.
+                                        You must have the FlowDeck attached.
+                                        Otherwise, add: <code>--ps "LPS"</code>, or <code>--ps "LPS|bcFlow2"</code>.
+                                    </div>
+
+                                    <label class="config-label" for="agentCommandPreview">Linux/MacOS/WSL</label>
+                                    <div class="copy-command-row">
+                                        <input
+                                                id="agentCommandPreview"
+                                                class="command-preview-input"
+                                                type="text"
+                                                readonly
+                                        />
+                                        <button
+                                                id="copyAgentCommandBtn"
+                                                class="copy-command-btn"
+                                                type="button"
+                                        >
+                                            Copy
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button
+                                    id="btnConnectAgentURI"
+                                    class="icon-connect-btn"
+                                    type="button"
+                                    title="Connect agent"
+                                    aria-label="Connect agent"
+                            >
+                                <span class="connect-icon" aria-hidden="true">🔌</span>
+                            </button>
+
+
+                        </div>
+                        <label class="config-label" for="syncTimeout">Timeout (ms)</label>
+                        <input
+                                id="syncTimeout"
+                                class="config-input"
+                                type="number"
+                                value="60000"
+                                min="1000"
+                                step="1000"
+                                placeholder="Timeout ms"
+                        />
+                    </div>
+
+
+                </div>
+                <div class="panel review-actions">
+                    <button id="reviewBackBtn" class="btn btn-secondary">Back</button>
+                    <button id="confirmSyncBtn" class="btn btn-primary">Sync</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,45 @@
+/*
+ * Copyright (c) 2026 Dominik Grzelak
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.swarmwalker.karol.backend.web.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
+import org.swarmwalker.karol.backend.data.AnchorPosition;
+
+public class LpsSyncJobRequest {
+
+    @Setter
+    @Getter
+    @NotBlank
+    private String file;
+
+    @Setter
+    @Getter
+    @NotBlank
+    private String uri;
+
+    @Setter
+    @Getter
+    @NotNull
+    private Long timeoutMs;
+
+    @NotNull
+    @Getter
+    @Setter
+    private Map<Integer, AnchorPosition> anchors;
+
+}

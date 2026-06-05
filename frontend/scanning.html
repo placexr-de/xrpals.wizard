@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VR Room Setup</title>
+
+    <link rel="stylesheet" href="./public/styles/main.css">
+    <link rel="stylesheet" href="./public/styles/scanning.css">
+
+    <script type="module" src="./src/wsbridge.js" defer></script>
+    <script type="module" src="./src/main.js" defer></script>
+    <script type="module" src="./src/scanning.js" defer></script>
+    <script type="application/javascript">
+        var global = window;
+    </script>
+</head>
+
+<body>
+<div class="background-grid"></div>
+<div class="center-wrapper">
+    <div class="scan-header">
+        <div class="stepper">
+            <div class="step done">
+                <div class="step-circle">1</div>
+                <div class="step-label">Start</div>
+            </div>
+            <div class="step-line done"></div>
+            <div class="step current">
+                <div class="step-circle">2</div>
+                <div class="step-label">Create Virtual Room</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step todo">
+                <div class="step-circle">3</div>
+                <div class="step-label">Environment Ready</div>
+            </div>
+        </div>
+    </div>
+    <div class="scan-card" id="uploadScreen">
+        <div class="wizard-step-header">
+            <h1>Creation of the Virtual Space in Progress</h1>
+            <p class="subtitle">Export the environment when you are finished or upload the data manually</p>
+        </div>
+        <div class="wizard-layout two-col">
+            <div class="wizard-column-left">
+                <div class="panel" style="text-align: center">
+                    <h2>XR-PALS App (VR)</h2>
+                    <div class="sync-indicator-wrap">
+                        <div id="syncIndicator" class="sync-indicator idle"></div>
+                        <div id="syncStatusText" class="sync-status-text">Awaiting data</div>
+                    </div>
+                    <div id="syncDetails" class="sync-details loader-text">
+                        Waiting for XR-PALS export or manual upload
+                    </div>
+                </div>
+                <div class="panel">
+                    <h2>Manual Upload</h2>
+                    <form id="uploadForm">
+                        <label class="file-drop" for="yamlFile">
+                            <div class="file-drop-title">Drop YAML here</div>
+                            <div class="file-drop-sub">or click to choose a file</div>
+                            <div id="fileName" class="file-name">No file selected</div>
+                        </label>
+                        <input id="yamlFile" name="file" type="file" accept=".yaml,.yml" hidden/>
+                        <div class="review-actions">
+                            <div class="info-popover">
+                                <button
+                                        id="agentHelpBtn"
+                                        class="info-icon-btn"
+                                        type="button"
+                                        aria-label="Show Example File Format"
+                                >
+                                    i
+                                </button>
+                                <div class="info-card">
+                                    <div class="info-card-title">Example File Format</div>
+                                    <div class="info-card-text">
+                                        If no file available, you can copy the empty template below.
+                                    </div>
+                                    <!--                                    <label class="config-label" for="commandPreview">Linux/MacOS/WSL</label>-->
+                                    <div class="copy-command-row">
+                                        <textarea
+                                                id="commandPreview"
+                                                class="command-preview-input"
+                                                type="text"
+                                                readonly
+                                        ></textarea>
+                                        <button
+                                                id="copyCommandBtn"
+                                                class="copy-command-btn"
+                                                type="button"
+                                        >
+                                            Copy
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button id="uploadBtn" class="btn btn-secondary" type="submit" disabled>
+                                Upload
+                            </button>
+                        </div>
+                        <div id="uploadHint" class="hint">
+                            Accepted: <code>.yaml</code> / <code>.yml</code>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="wizard-column-right">
+                <div class="panel vr-panel">
+                    <h2>VR Instructions</h2>
+                    <img class="scan-hero" src="public/imgs/vr-headset.png" alt="VR Headset">
+                    <div class="scan-illustration-note">
+                        Put on your VR headset and create the boundary of your virtual room.<br>
+                        When you finish, export inside the VR headset.
+                    </div>
+                </div>
+                <div class="panel review-actions">
+                    <button id="cancelBtn" class="btn btn-secondary" type="button">
+                        Cancel Session
+                    </button>
+                    <button id="nextButton" class="btn btn-primary">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
