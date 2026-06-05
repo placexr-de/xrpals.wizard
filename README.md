@@ -10,7 +10,7 @@ $ mvnw.cmd spring-boot:run
 
 # Linux
 $ ./mvnw spring-boot:run \
-  -Dspring-boot.run.arguments="--xrpals.uploads-dir=/home/dominik/Desktop/Bigraph-Universe/Applications/Swarmwalker/config-server/uploads-xrpalswizard"
+  -Dspring-boot.run.arguments="--xrpals.uploads-dir=/home/user/swarmwalker/config-server/uploads-xrpalswizard"
 ```
 
 or
