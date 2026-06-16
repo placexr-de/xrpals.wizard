@@ -3,7 +3,7 @@ set -e
 
 # Example:
 # ./cfpyctrl.sh \
-#  --uri radio://0/80/2M/E7E7E7E7B1 \
+#  --uri radio://0/80/2M/E7E7E7E7E1 \
 #  --port 5000 \
 #  --wsendpoint \
 #  --wsport 8765

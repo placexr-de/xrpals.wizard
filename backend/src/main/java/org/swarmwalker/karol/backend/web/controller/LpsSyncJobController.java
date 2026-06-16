@@ -52,6 +52,7 @@ public class LpsSyncJobController {
     private final WebSocketBroadcaster websocketBroadcaster;
     private final XrpalsProperties props;
     private final LpsAnchorYamlWriterService yamlWriter;
+
     @Autowired
     public LpsSyncJobController(LpsSyncJobService LpsSyncJobService, LpsSyncJobStore jobStore, XrpalsProperties props,
                                 WebSocketBroadcaster websocketBroadcaster,
@@ -65,7 +66,7 @@ public class LpsSyncJobController {
 
     @PostMapping(value = "/anchors", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<LpsSyncJobAck> run(@Valid @RequestBody LpsSyncJobRequest req) throws IOException {
-
+        Path normalizedPath = Path.of(props.getUploadsDir()).toAbsolutePath().normalize();
         String jobId = UUID.randomUUID().toString();
         Duration timeout = Duration.ofMillis(req.getTimeoutMs());
         LpsSyncJobResult queued = LpsSyncJobResult.empty(jobId);
@@ -74,17 +75,16 @@ public class LpsSyncJobController {
         String filename = FilenameUtils.getName(req.getFile());
         String workingDir = props.getWorkingDir();
 
-        Path overwritePath = Paths.get(String.valueOf(Path.of(props.getUploadsDir()).toAbsolutePath().normalize()), filename);
-        //Path.of(workingDir, props.getUploadsDir(), filename);
+        Path overwritePath = Paths.get(String.valueOf(normalizedPath), filename);
         yamlWriter.writeAnchors(overwritePath, req.getAnchors());
 
         String command =
                 "docker run --rm " +
                         "--device-cgroup-rule='c 189:* rmw' " +
                         "--volume \"/dev:/dev\" " +
-                        "--mount type=bind,source=$(pwd)/uploads,target=/home/user/dev_ws/libs/crazyflie-controller/examples " +
+                        "--mount type=bind,source=" + normalizedPath + "/" + filename + ",target=/home/user/dev_ws/libs/crazyflie-controller/examples/lps/" + filename + " " +
                         "cf-pyctrl " +
-                        "bash -lc \"cd /home/user/dev_ws/libs/crazyflie-controller/examples/ && " +
+                        "bash -lc \"cd /home/user/dev_ws/libs/crazyflie-controller/examples/lps && " +
                         "cat " + filename +
                         " | python3 -u ./set_positions.py " + req.getUri() + "\"";
         CompletableFuture<ProcessResult> future =
