@@ -42,22 +42,36 @@
         </div>
         <div class="wizard-layout one-col">
             <div class="panel">
-                <div>
-                    <img class="vr-image" src="public/imgs/vr-headset.png"/>
+                <div class="start-content-grid">
+
+                    <div class="start-vr-panel">
+                        <img class="vr-image" src="public/imgs/vr-headset.png" alt="VR Headset">
+
+                        <ul class="steps">
+                            <li class="done">Put on your VR glasses and open XR-PALS</li>
+                            <li class="current">Look around and create the space</li>
+                            <li class="todo">Finish and return to the wizard</li>
+                        </ul>
+                    </div>
+
+                    <div class="reference-panel">
+                        <h3>Reference Setup</h3>
+                        <a href="https://www.bitcraze.io/documentation/tutorials/getting-started-with-loco-positioning-system/"
+                           target="_blank">
+                            <img
+                                    class="reference-setup-image"
+                                    src="public/imgs/reference-setup.png"
+                                    alt="Reference setup using 8 anchors"
+                            >
+                        </a>
+                    </div>
                 </div>
-            <div style="text-align: center">
-                <ul class="steps">
-                    <li class="done">Put on your VR glasses and open XR-PALS</li>
-                    <li class="current">Look around and create the space</li>
-                    <li class="todo">Finish and return to the wizard</li>
-                </ul>
-            </div>
-            </div>
                 <div class="panel review-actions">
                     <button id="startButton" class="btn btn-primary">
                         Start
                     </button>
                 </div>
+            </div>
         </div>
     </div>
 </div>

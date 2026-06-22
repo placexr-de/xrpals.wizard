@@ -35,3 +35,24 @@
     color: #2b2b2b;
     opacity: 0.9;
 }
+
+.scan-hero {
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.18));
+}
+
+
+.scan-illustration-note {
+    text-align: center;
+    color: #2b2b2b;
+    line-height: 1.35;
+}
+
+.vr-panel {
+    gap: 14px;
+    height: 100%;
+}
+
+.vr-panel .scan-hero {
+    width: 135px;
+    margin-top: 6px;
+}

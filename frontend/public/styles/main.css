@@ -232,7 +232,56 @@ html, body {
     border: 1px solid #DCE3EB;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
 
-    padding: 28px 28px 22px;
+    padding: 28px 28px 22px 28px;
+}
+
+.start-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    align-items: stretch;
+}
+
+.start-vr-panel,
+.reference-panel {
+    margin-bottom: 0;
+    min-height: 520px;
+}
+
+.start-vr-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.reference-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.reference-panel h2 {
+    margin-bottom: 18px;
+}
+
+.reference-setup-image {
+    width: 100%;
+    max-width: 430px;
+    height: auto;
+    display: block;
+    margin: auto 0;
+}
+
+@media (max-width: 900px) {
+    .start-content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .start-vr-panel,
+    .reference-panel {
+        min-height: auto;
+    }
 }
 
 .wizard-step-header h1 {
@@ -240,31 +289,6 @@ html, body {
     font-size: 26px;
     text-align: center;
 }
-
-
-
-.scan-hero {
-    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.18));
-}
-
-
-.scan-illustration-note {
-    text-align: center;
-    color: #2b2b2b;
-    line-height: 1.35;
-}
-
-.vr-panel {
-    gap: 14px;
-    height: 100%;
-}
-
-.vr-panel .scan-hero {
-    width: 200px;
-    margin-top: 6px;
-}
-
-
 
 .hint {
     font-size: 12px;
