@@ -44,7 +44,7 @@ public class XrPalsDataUploadController {
 
     @GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
     public String index() {
-        return "XR-PALS - LPS Upload Server\nVersion: " + XRPALS_VERSION;
+        return "XR-PALS - Backend Upload and LPS Sync Server\nVersion: " + XRPALS_VERSION;
     }
 
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
