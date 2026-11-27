@@ -1,58 +1,303 @@
-.file-drop {
-    cursor: pointer;
-    user-select: none;
+/* Step 2: a split workspace with instructions on the left and receiving options on the right. */
+.scanning-card {
+    max-width: 1180px;
+}
 
-    border-radius: 12px;
-    border: 1px dashed #DCE3EB;
-    background: rgba(255, 255, 255, 0.92);
+.scanning-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(380px, 1.1fr);
+    align-items: stretch;
+    gap: clamp(26px, 4vw, 54px);
+}
 
-    padding: 16px;
-
+.scanning-intro {
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-
-    transition: transform 0.12s, border-color 0.12s;
+    justify-content: center;
+    padding: 8px 0;
 }
 
-.file-drop:hover {
-    transform: translateY(-1px);
-    border-color: rgba(120, 140, 200, 0.85);
+.scanning-intro h1 {
+    max-width: 520px;
 }
 
-.file-drop-title {
-    font-weight: 650;
+.scanning-subtitle {
+    max-width: 510px;
+    margin-top: 12px;
 }
 
-.file-drop-sub {
-    color: #5a5a5a;
-    font-size: 13px;
-}
-
-.file-name {
-    margin-top: 6px;
-    font-size: 13px;
-    color: #2b2b2b;
-    opacity: 0.9;
+.scanning-hero-wrap {
+    min-height: 210px;
+    margin: 20px 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(248, 250, 254, 0.25), rgba(239, 244, 252, 0.65));
 }
 
 .scan-hero {
-    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.18));
+    display: block;
+    width: min(76%, 245px);
+    max-height: 220px;
+    object-fit: contain;
+    filter: drop-shadow(0 13px 18px rgba(31, 41, 55, 0.13));
 }
 
-
-.scan-illustration-note {
-    text-align: center;
-    color: #2b2b2b;
-    line-height: 1.35;
+.instruction-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 8px;
 }
 
-.vr-panel {
+.instruction-item {
+    display: grid;
+    grid-template-columns: 25px minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+}
+
+.instruction-number {
+    width: 23px;
+    height: 23px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d6e0ef;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.instruction-item p {
+    margin: 1px 0 0;
+    color: #435066;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.scanning-operations {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 14px;
-    height: 100%;
+    align-content: stretch;
 }
 
-.vr-panel .scan-hero {
-    width: 135px;
-    margin-top: 6px;
+.scanning-operations > .panel {
+    min-width: 0;
+}
+
+.connection-panel {
+    min-height: 255px;
+}
+
+.upload-panel {
+    min-height: 250px;
+}
+
+.status-chip {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 9px;
+    border: 1px solid #e3eaf3;
+    border-radius: 999px;
+    background: #fff;
+    color: #7a8799;
+    font-size: 10px;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #8bb99a;
+    box-shadow: 0 0 0 3px rgba(85, 184, 117, 0.10);
+}
+
+.connection-status-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.connection-status-content .sync-indicator-wrap {
+    min-height: 96px;
+    margin: 12px 0 0;
+}
+
+.connection-status-content .sync-indicator {
+    width: 46px;
+    height: 46px;
+    border-width: 4px;
+}
+
+.connection-status-content .sync-details {
+    min-height: 55px;
+    max-height: 106px;
+    margin-top: 3px;
+}
+
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    margin-top: 14px;
+}
+
+.file-drop {
+    min-height: 120px;
+    padding: 17px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: 1px dashed #cbd7e8;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.file-drop:hover,
+.file-drop:focus-within {
+    background: #fff;
+    border-color: #9fb2d4;
+}
+
+.file-drop.drag-over {
+    border-color: var(--blue);
+    background: var(--blue-soft);
+}
+
+.file-drop-icon {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e0e7f0;
+    border-radius: 50%;
+    color: #6c7b93;
+    background: #fff;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.file-drop-title {
+    color: #29364b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.file-drop-sub {
+    color: #7a8698;
+    font-size: 12px;
+}
+
+.file-name {
+    max-width: 100%;
+    margin-top: 4px;
+    overflow: hidden;
+    color: #687487;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.upload-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.upload-form-footer .hint {
+    max-width: 65%;
+}
+
+.upload-form-footer .btn {
+    flex: 0 0 auto;
+}
+
+.upload-help-popover .info-card {
+    right: -4px;
+    width: min(350px, calc(100vw - 36px));
+}
+
+.upload-help-popover .command-preview-input {
+    min-height: 105px;
+}
+
+@media (max-width: 960px) {
+    .scanning-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .scanning-intro {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(145px, 0.55fr);
+        column-gap: 20px;
+        align-items: center;
+    }
+
+    .scanning-intro > .step-kicker,
+    .scanning-intro > h1,
+    .scanning-intro > .subtitle,
+    .scanning-intro > .instruction-list {
+        grid-column: 1;
+    }
+
+    .scanning-hero-wrap {
+        grid-column: 2;
+        grid-row: 1 / span 4;
+        min-height: 180px;
+        margin: 0;
+    }
+}
+
+@media (max-width: 620px) {
+    .scanning-intro {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .scanning-hero-wrap {
+        min-height: 145px;
+        margin: 16px 0 12px;
+    }
+
+    .scan-hero {
+        width: min(70%, 180px);
+        max-height: 150px;
+    }
+
+    .panel-heading-line {
+        align-items: flex-start;
+    }
+
+    .upload-form-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .upload-form-footer .hint {
+        max-width: none;
+    }
+
+    .upload-form-footer .btn {
+        width: 100%;
+    }
 }

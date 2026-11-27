@@ -128,7 +128,7 @@ export class BlockWorld {
 
     createTextLabel(text, position, fontSize = 28, options = {}) {
         const {depthTest = true, depthWrite = true, renderOrder = 0} = options;
-        // Create canvas to draw text
+
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
 

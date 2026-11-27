@@ -2,26 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>VR Room Setup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prepare Your Virtual Space | XR-PALS</title>
 
     <link rel="stylesheet" href="./public/styles/main.css">
 
     <script type="module" src="./src/main.js" defer></script>
     <script type="module" src="./src/start.js" defer></script>
-    <script type="application/javascript">
-        var global = window;
-    </script>
+    <script type="application/javascript">var global = window;</script>
 </head>
 <body>
-<div class="background-grid"></div>
-<div class="center-wrapper">
+<div class="background-grid" aria-hidden="true"></div>
+
+<main class="center-wrapper">
     <div class="scan-header">
-        <div class="stepper">
-            <div class="step current">
+        <nav class="stepper" aria-label="Setup progress">
+            <div class="step current" aria-current="step">
                 <div class="step-circle">1</div>
                 <div class="step-label">Start</div>
             </div>
-            <div class="step-line done"></div>
+            <div class="step-line"></div>
             <div class="step">
                 <div class="step-circle">2</div>
                 <div class="step-label">Create Virtual Room</div>
@@ -31,49 +31,55 @@
                 <div class="step-circle">3</div>
                 <div class="step-label">Environment Ready</div>
             </div>
-        </div>
+        </nav>
     </div>
-    <div class="scan-card">
-        <div class="wizard-step-header">
-            <h1>Prepare Your Virtual Space!</h1>
-            <p class="subtitle">
-                Follow these steps to create a virtual room in mixed reality.
-            </p>
-        </div>
-        <div class="wizard-layout one-col">
-            <div class="panel">
-                <div class="start-content-grid">
 
-                    <div class="start-vr-panel">
-                        <img class="vr-image" src="public/imgs/vr-headset.png" alt="VR Headset">
-
-                        <ul class="steps">
-                            <li class="done">Put on your VR glasses and open XR-PALS</li>
-                            <li class="current">Look around and create the space</li>
-                            <li class="todo">Finish and return to the wizard</li>
-                        </ul>
-                    </div>
-
-                    <div class="reference-panel">
-                        <h3>Reference Setup</h3>
-                        <a href="https://www.bitcraze.io/documentation/tutorials/getting-started-with-loco-positioning-system/"
-                           target="_blank">
-                            <img
-                                    class="reference-setup-image"
-                                    src="public/imgs/reference-setup.png"
-                                    alt="Reference setup using 8 anchors"
-                            >
-                        </a>
-                    </div>
+    <section class="scan-card start-card" aria-labelledby="startTitle">
+        <div class="start-layout">
+            <section class="start-copy">
+                <div class="wizard-step-header">
+                    <p class="step-kicker">STEP 1 · PREPARATION</p>
+                    <h1 id="startTitle">Prepare your virtual space</h1>
+                    <p class="subtitle">Create a room in mixed reality, then review its anchors before synchronization.</p>
                 </div>
-                <div class="panel review-actions">
-                    <button id="startButton" class="btn btn-primary">
-                        Start
-                    </button>
+
+                <div class="start-guidance">
+                    <div class="start-headset-visual">
+                        <img class="vr-image" src="public/imgs/vr-headset.png" alt="Virtual reality headset">
+                    </div>
+                    <ul class="steps" aria-label="Preparation steps">
+                        <li class="current">Put on your VR glasses and open XR-PALS</li>
+                        <li class="todo">Look around and create the space</li>
+                        <li class="todo">Finish and return to the wizard</li>
+                    </ul>
                 </div>
-            </div>
+
+                <p class="supporting-note"></p>
+            </section>
+
+            <section class="reference-panel" aria-labelledby="referenceTitle">
+                <div class="reference-heading">
+                    <p class="step-kicker">REFERENCE</p>
+                    <h2 id="referenceTitle">Recommended anchor setup</h2>
+                    <p class="panel-subtitle">Use the reference arrangement as a guide when placing your anchors.</p>
+                </div>
+                <a class="reference-image-link"
+                   href="https://www.bitcraze.io/documentation/tutorials/getting-started-with-loco-positioning-system/"
+                   target="_blank" rel="noopener noreferrer"
+                   aria-label="Open Bitcraze Loco Positioning System setup guide">
+                    <img class="reference-setup-image"
+                         src="public/imgs/reference-setup.png"
+                         alt="Reference setup showing anchors around a room">
+                </a>
+                <p class="visual-caption">Vary anchor heights a bit where possible. Mount the anchors horizontally.</p>
+            </section>
         </div>
-    </div>
-</div>
+
+        <footer class="wizard-footer">
+            <span class="footer-note">Click "Start" to begin</span>
+            <button id="startButton" class="btn btn-primary" type="button">Start</button>
+        </footer>
+    </section>
+</main>
 </body>
 </html>

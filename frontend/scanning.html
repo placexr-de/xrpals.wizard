@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>VR Room Setup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Virtual Room | XR-PALS</title>
 
     <link rel="stylesheet" href="./public/styles/main.css">
     <link rel="stylesheet" href="./public/styles/scanning.css">
@@ -10,22 +11,20 @@
     <script type="module" src="./src/wsbridge.js" defer></script>
     <script type="module" src="./src/main.js" defer></script>
     <script type="module" src="./src/scanning.js" defer></script>
-    <script type="application/javascript">
-        var global = window;
-    </script>
+    <script type="application/javascript">var global = window;</script>
 </head>
-
 <body>
-<div class="background-grid"></div>
-<div class="center-wrapper">
+<div class="background-grid" aria-hidden="true"></div>
+
+<main class="center-wrapper">
     <div class="scan-header">
-        <div class="stepper">
+        <nav class="stepper" aria-label="Setup progress">
             <div class="step done">
-                <div class="step-circle">1</div>
+                <div class="step-circle">✓</div>
                 <div class="step-label">Start</div>
             </div>
             <div class="step-line done"></div>
-            <div class="step current">
+            <div class="step current" aria-current="step">
                 <div class="step-circle">2</div>
                 <div class="step-label">Create Virtual Room</div>
             </div>
@@ -34,98 +33,98 @@
                 <div class="step-circle">3</div>
                 <div class="step-label">Environment Ready</div>
             </div>
-        </div>
+        </nav>
     </div>
-    <div class="scan-card" id="uploadScreen">
-        <div class="wizard-step-header">
-            <h1>Creation of the Virtual Space in Progress</h1>
-            <p class="subtitle">Export the environment when you are finished or upload the data manually</p>
-        </div>
-        <div class="wizard-layout two-col">
-            <div class="wizard-column-left">
-                <div class="panel" style="text-align: center">
-                    <h2>XR-PALS App (VR)</h2>
-                    <div class="sync-indicator-wrap">
-                        <div id="syncIndicator" class="sync-indicator idle"></div>
-                        <div id="syncStatusText" class="sync-status-text">Awaiting data</div>
+
+    <section class="scan-card scanning-card" id="uploadScreen" aria-labelledby="scanningTitle">
+        <div class="scanning-layout">
+            <section class="scanning-intro">
+                <p class="step-kicker">STEP 2 · ROOM CREATION</p>
+                <h1 id="scanningTitle">Create your virtual room</h1>
+                <p class="subtitle scanning-subtitle">Scan the room in XR-PALS, then export the environment. A manual YAML upload is available as alternative.</p>
+
+                <div class="scanning-hero-wrap">
+                    <img class="scan-hero" src="public/imgs/vr-headset.png" alt="Virtual reality headset">
+                </div>
+
+                <div class="instruction-list">
+                    <div class="instruction-item">
+                        <span class="instruction-number">1</span>
+                        <p>Put on your headset and create the room boundary.</p>
                     </div>
-                    <div id="syncDetails" class="sync-details loader-text">
-                        Waiting for XR-PALS export or manual upload
+                    <div class="instruction-item">
+                        <span class="instruction-number">2</span>
+                        <p>When the room is ready, export it from the VR application.</p>
                     </div>
                 </div>
-                <div class="panel">
-                    <h2>Manual Upload</h2>
-                    <form id="uploadForm">
-                        <label class="file-drop" for="yamlFile">
-                            <div class="file-drop-title">Drop YAML here</div>
-                            <div class="file-drop-sub">or click to choose a file</div>
-                            <div id="fileName" class="file-name">No file selected</div>
-                        </label>
-                        <input id="yamlFile" name="file" type="file" accept=".yaml,.yml" hidden/>
-                        <div class="review-actions">
-                            <div class="info-popover">
-                                <button
-                                        id="agentHelpBtn"
-                                        class="info-icon-btn"
-                                        type="button"
-                                        aria-label="Show Example File Format"
-                                >
-                                    i
-                                </button>
-                                <div class="info-card">
-                                    <div class="info-card-title">Example File Format</div>
-                                    <div class="info-card-text">
-                                        If no file available, you can copy the empty template below.
-                                    </div>
-                                    <!--                                    <label class="config-label" for="commandPreview">Linux/MacOS/WSL</label>-->
-                                    <div class="copy-command-row">
-                                        <textarea
-                                                id="commandPreview"
-                                                class="command-preview-input"
-                                                type="text"
-                                                readonly
-                                        ></textarea>
-                                        <button
-                                                id="copyCommandBtn"
-                                                class="copy-command-btn"
-                                                type="button"
-                                        >
-                                            Copy
-                                        </button>
-                                    </div>
+            </section>
+
+            <section class="scanning-operations" aria-label="Environment data reception">
+                <section class="panel connection-panel" aria-labelledby="xrpalsTitle">
+                    <div class="panel-heading-line">
+                        <div>
+                            <p class="step-kicker">AUTOMATIC</p>
+                            <h2 id="xrpalsTitle">XR-PALS connection</h2>
+                        </div>
+                        <span class="status-chip"><span class="status-dot"></span> Listening</span>
+                    </div>
+
+                    <div class="connection-status-content">
+                        <div class="sync-indicator-wrap">
+                            <div id="syncIndicator" class="sync-indicator idle"></div>
+                            <div id="syncStatusText" class="sync-status-text">Awaiting data</div>
+                        </div>
+                        <div id="syncDetails" class="sync-details loader-text">Waiting for XR-PALS export or manual upload</div>
+                    </div>
+                </section>
+
+                <section class="panel upload-panel" aria-labelledby="manualUploadTitle">
+                    <div class="panel-heading-line">
+                        <div>
+                            <p class="step-kicker">ALTERNATIVE</p>
+                            <h2 id="manualUploadTitle">Manual YAML upload</h2>
+                        </div>
+                        <div class="info-popover upload-help-popover">
+                            <button id="agentHelpBtn" class="info-icon-btn" type="button"
+                                    aria-label="Show example YAML format" aria-expanded="false">i</button>
+                            <div class="info-card" role="tooltip">
+                                <div class="info-card-title">Example file format</div>
+                                <div class="info-card-text">If you do not have an export file, you can copy this empty anchor template and fill in the positions.</div>
+                                <label class="config-label" for="commandPreview">YAML template</label>
+                                <div class="copy-command-row">
+                                    <textarea id="commandPreview" class="command-preview-input" readonly spellcheck="false"></textarea>
+                                    <button id="copyCommandBtn" class="copy-command-btn" type="button">Copy</button>
                                 </div>
                             </div>
-
-                            <button id="uploadBtn" class="btn btn-secondary" type="submit" disabled>
-                                Upload
-                            </button>
                         </div>
-                        <div id="uploadHint" class="hint">
-                            Accepted: <code>.yaml</code> / <code>.yml</code>
+                    </div>
+
+                    <form id="uploadForm" class="upload-form">
+                        <label class="file-drop" for="yamlFile">
+                            <span class="file-drop-icon" aria-hidden="true">↑</span>
+                            <span class="file-drop-title">Drop YAML here</span>
+                            <span class="file-drop-sub">or click to choose a file</span>
+                            <span id="fileName" class="file-name">No file selected</span>
+                        </label>
+                        <input id="yamlFile" name="file" type="file" accept=".yaml,.yml" hidden>
+
+                        <div class="upload-form-footer">
+                            <p id="uploadHint" class="hint">Accepted formats: <code>.yaml</code> and <code>.yml</code></p>
+                            <button id="uploadBtn" class="btn btn-secondary" type="submit" disabled>Upload file</button>
                         </div>
                     </form>
-                </div>
-            </div>
-            <div class="wizard-column-right">
-                <div class="panel vr-panel">
-                    <h2>VR Instructions</h2>
-                    <img class="scan-hero" src="public/imgs/vr-headset.png" alt="VR Headset">
-                    <div class="scan-illustration-note">
-                        Put on your VR headset and create the boundary of your virtual room.<br>
-                        When you finish, export inside the VR headset.
-                    </div>
-                </div>
-                <div class="panel review-actions">
-                    <button id="cancelBtn" class="btn btn-secondary" type="button">
-                        Cancel Session
-                    </button>
-                    <button id="nextButton" class="btn btn-primary">
-                        Next
-                    </button>
-                </div>
-            </div>
+                </section>
+            </section>
         </div>
-    </div>
-</div>
+
+        <footer class="wizard-footer">
+            <span class="footer-note">Continue when the environment data has been received.</span>
+            <div class="footer-actions">
+                <button id="cancelBtn" class="btn btn-secondary" type="button">Cancel session</button>
+                <button id="nextButton" class="btn btn-primary" type="button">Next</button>
+            </div>
+        </footer>
+    </section>
+</main>
 </body>
 </html>

@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>VR Room Setup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environment Ready | XR-PALS</title>
 
     <link rel="stylesheet" href="./public/styles/main.css">
     <link rel="stylesheet" href="./public/styles/review.css">
@@ -10,177 +11,185 @@
     <script type="module" src="./src/wsbridge.js" defer></script>
     <script type="module" src="./src/main.js" defer></script>
     <script type="module" src="./src/review.js" defer></script>
-    <script type="application/javascript">
-        var global = window;
-    </script>
+    <script type="module" src="./src/review-help.js" defer></script>
+    <script type="application/javascript">var global = window;</script>
 </head>
-
 <body>
+<div class="background-grid" aria-hidden="true"></div>
 
-<div class="background-grid"></div>
-
-<div class="center-wrapper">
-
+<main class="center-wrapper">
     <div class="scan-header">
-        <div class="stepper">
+        <nav class="stepper" aria-label="Setup progress">
             <div class="step done">
-                <div class="step-circle">1</div>
+                <div class="step-circle">✓</div>
                 <div class="step-label">Start</div>
             </div>
-
             <div class="step-line done"></div>
-
             <div class="step done">
-                <div class="step-circle">2</div>
+                <div class="step-circle">✓</div>
                 <div class="step-label">Create Virtual Room</div>
             </div>
-
             <div class="step-line done"></div>
-
-            <div class="step current">
+            <div class="step current" aria-current="step">
                 <div class="step-circle">3</div>
                 <div class="step-label">Environment Ready</div>
             </div>
-        </div>
+        </nav>
     </div>
 
-    <div id="reviewScreen" class="scan-card">
+    <section id="reviewScreen" class="scan-card review-card" aria-labelledby="reviewTitle">
+        <header class="review-page-heading">
+            <div>
+                <p class="step-kicker">STEP 3 · VERIFY AND SYNCHRONIZE</p>
+                <h1 id="reviewTitle">Environment ready</h1>
+                <p class="subtitle">Review the anchor positions, then synchronize them with the Crazyflie.</p>
+            </div>
+            <button id="placementHelpToggle" class="btn btn-secondary placement-help-trigger"
+                    type="button" aria-controls="placementHelpPanel" aria-expanded="false">
+                <span class="help-trigger-icon" aria-hidden="true">?</span>
+                Placement guidance
+            </button>
+        </header>
 
-        <div class="wizard-step-header">
-            <h1>Environment Ready</h1>
-            <p class="subtitle">Review detected anchors and confirm synchronization</p>
-        </div>
+        <div class="review-layout">
+            <section class="review-left-column wizard-column-left" aria-label="Environment and anchors">
+                <section class="world-preview" aria-label="3D environment preview">
+                    <div id="anchorPreviewCanvas" class="anchor-preview-canvas"></div>
+                </section>
 
-        <div class="world-preview">
-            <div id="anchorPreviewCanvas" class="anchor-preview-canvas"></div>
-        </div>
-
-        <div class="wizard-layout two-col">
-
-            <div class="wizard-column-left">
-                <div class="panel">
-
-
-                    <h2>Anchors Preview</h2>
+                <section class="panel anchor-panel" aria-labelledby="anchorsTitle">
+                    <div class="panel-heading-line anchor-panel-heading">
+                        <div>
+                            <p class="step-kicker">ENVIRONMENT DATA</p>
+                            <h2 id="anchorsTitle">Anchor positions</h2>
+                        </div>
+                        <div class="anchor-count-pill"><span id="summaryAnchorCount">0</span><span>anchors</span></div>
+                    </div>
 
                     <div class="anchors-table-wrap">
                         <table class="anchors-table">
                             <thead>
                             <tr>
-                                <th>Anchor</th>
-                                <th>X</th>
-                                <th>Y</th>
-                                <th>Z</th>
+                                <th scope="col">Anchor</th>
+                                <th scope="col">X (m)</th>
+                                <th scope="col">Y (m)</th>
+                                <th scope="col">Z (m)</th>
                             </tr>
                             </thead>
                             <tbody id="anchorsTableBody"></tbody>
                         </table>
                     </div>
-                </div>
-                <div class="panel">
-                    <h3>Summary</h3>
-                    <div class="summary-list">
-                        <div class="summary-row">
-                            <span class="summary-label">Detected anchors</span>
-                            <span id="summaryAnchorCount" class="summary-value">0</span>
+                    <p class="table-footnote">Check the coordinates before starting synchronization.</p>
+                </section>
+            </section>
+
+            <section class="review-right-column wizard-column-right" aria-label="LPS synchronization">
+                <section class="panel sync-panel" aria-labelledby="syncPanelTitle">
+                    <div class="panel-heading-line">
+                        <div>
+                            <p class="step-kicker">LPS</p>
+                            <h2 id="syncPanelTitle">Synchronization</h2>
                         </div>
+                        <span class="status-chip"><span class="status-dot"></span> Job status</span>
                     </div>
-                </div>
-            </div>
-
-            <div class="wizard-column-right">
-
-                <div class="panel vr-panel">
-                    <h2>LPS Sync Status</h2>
 
                     <div class="sync-indicator-wrap">
                         <div id="syncIndicator" class="sync-indicator idle"></div>
                         <div id="syncStatusText" class="sync-status-text">Ready to sync</div>
                     </div>
 
-                    <div id="syncDetails" class="sync-details">
-                        No job started yet.
-                    </div>
+                    <div id="syncDetails" class="sync-details">No job started yet.</div>
 
                     <div class="sync-config">
-                        <label class="config-label" for="radioUri">Crazyflie URI</label>
+                        <div class="config-field">
+                            <label class="config-label" for="radioUri">Crazyflie URI</label>
+                            <div class="agent-uri-row">
+                                <input id="radioUri" class="config-input" type="text"
+                                       value="radio://0/80/2M/E7E7E7E7E1" autocomplete="off" spellcheck="false">
 
-                        <div class="agent-uri-row">
-                            <input
-                                    id="radioUri"
-                                    class="config-input"
-                                    value="radio://0/80/2M/E7E7E7E7E1"
-                            />
-
-                            <div class="info-popover">
-                                <button
-                                        id="agentHelpBtn"
-                                        class="info-icon-btn"
-                                        type="button"
-                                        aria-label="Show Crazyflie startup command"
-                                >
-                                    i
-                                </button>
-
-                                <div class="info-card">
-                                    <div class="info-card-title">Crazyflie startup command</div>
-                                    <div class="info-card-text">
-                                        Before connecting, start the websocket bridge for this Crazyflie URI.
-                                        You must have the FlowDeck attached.
-                                        Otherwise, add: <code>--ps "LPS"</code>, or <code>--ps "LPS|bcFlow2"</code>.
-                                    </div>
-
-                                    <label class="config-label" for="agentCommandPreview">Linux/MacOS/WSL</label>
-                                    <div class="copy-command-row">
-                                        <input
-                                                id="agentCommandPreview"
-                                                class="command-preview-input"
-                                                type="text"
-                                                readonly
-                                        />
-                                        <button
-                                                id="copyAgentCommandBtn"
-                                                class="copy-command-btn"
-                                                type="button"
-                                        >
-                                            Copy
-                                        </button>
+                                <div class="info-popover">
+                                    <button id="agentHelpBtn" class="info-icon-btn" type="button"
+                                            aria-label="Show Crazyflie startup command" aria-expanded="false">i</button>
+                                    <div class="info-card" role="tooltip">
+                                        <div class="info-card-title">Crazyflie startup command</div>
+                                        <div class="info-card-text">
+                                            Start the websocket bridge for this URI before connecting. A FlowDeck is required.
+                                            Otherwise add <code>--ps &quot;LPS&quot;</code> or <code>--ps &quot;LPS|bcFlow2&quot;</code>.
+                                        </div>
+                                        <label class="config-label" for="agentCommandPreview">Linux / macOS / WSL</label>
+                                        <div class="copy-command-row">
+                                            <input id="agentCommandPreview" class="command-preview-input" type="text" readonly>
+                                            <button id="copyAgentCommandBtn" class="copy-command-btn" type="button">Copy</button>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <button id="btnConnectAgentURI" class="icon-connect-btn" type="button"
+                                        title="Connect agent" aria-label="Connect agent">
+                                    <span class="connect-icon" aria-hidden="true">↗</span>
+                                </button>
                             </div>
-                            <button
-                                    id="btnConnectAgentURI"
-                                    class="icon-connect-btn"
-                                    type="button"
-                                    title="Connect agent"
-                                    aria-label="Connect agent"
-                            >
-                                <span class="connect-icon" aria-hidden="true">🔌</span>
-                            </button>
-
-
                         </div>
-                        <label class="config-label" for="syncTimeout">Timeout (ms)</label>
-                        <input
-                                id="syncTimeout"
-                                class="config-input"
-                                type="number"
-                                value="60000"
-                                min="1000"
-                                step="1000"
-                                placeholder="Timeout ms"
-                        />
+
+                        <div class="config-field">
+                            <label class="config-label" for="syncTimeout">Timeout (ms)</label>
+                            <input id="syncTimeout" class="config-input" type="number"
+                                   value="60000" min="1000" step="1000" placeholder="Timeout ms">
+                        </div>
                     </div>
+                </section>
 
-
-                </div>
-                <div class="panel review-actions">
-                    <button id="reviewBackBtn" class="btn btn-secondary">Back</button>
-                    <button id="confirmSyncBtn" class="btn btn-primary">Sync</button>
-                </div>
-            </div>
+                <footer class="wizard-footer review-actions">
+                    <button id="reviewBackBtn" class="btn btn-secondary" type="button">Back</button>
+                    <button id="confirmSyncBtn" class="btn btn-primary" type="button">Sync anchors</button>
+                </footer>
+            </section>
         </div>
+    </section>
+</main>
+
+<div id="placementHelpBackdrop" class="placement-help-backdrop" hidden></div>
+<aside id="placementHelpPanel" class="placement-help-drawer" role="dialog" aria-modal="true" aria-labelledby="placementHelpTitle"
+       aria-hidden="true" inert>
+    <header class="drawer-header">
+        <div>
+            <p class="step-kicker">REFERENCE</p>
+            <h2 id="placementHelpTitle">Placement guidance</h2>
+            <p class="drawer-subtitle">Recommendations for room geometry and anchor placement.</p>
+        </div>
+        <button id="placementHelpClose" class="drawer-close-btn" type="button" aria-label="Close placement guidance">×</button>
+    </header>
+
+    <div class="drawer-content">
+        <section class="guidance-card" aria-labelledby="roomDimensionsTitle">
+            <h3 id="roomDimensionsTitle">Room dimensions</h3>
+            <p>For a rectangular room, use length <em>L</em>, width <em>W</em>, and height <em>H</em>.</p>
+            <div class="dimension-list">
+                <div><span>Length</span><strong><em>L</em> = 12 m</strong></div>
+                <div><span>Width</span><strong><em>W</em> = 9 m</strong></div>
+                <div><span>Height</span><strong><em>H</em> = 4 m</strong></div>
+            </div>
+            <div class="equation-card" aria-label="Maximum of length and width divided by height should be at most three">
+                <span class="fraction"><span>max(<em>L</em>, <em>W</em>)</span><span><em>H</em></span></span>
+                <span class="equation-symbol">≤ 3</span>
+            </div>
+            <p class="guidance-example"><strong>Example:</strong> max(12, 9) / 4 = 3. This meets the stated guideline.</p>
+        </section>
+
+        <section class="guidance-card" aria-labelledby="anchorPlacementTitle">
+            <h3 id="anchorPlacementTitle">Anchor placement</h3>
+            <p>Distribute anchors around the room to give the positioning system a useful spread of reference points.</p>
+            <ul class="guidance-list">
+                <li>Place anchors around the room perimeter, including corners or walls where appropriate.</li>
+                <li>Keep anchors at least <strong>2 metres apart</strong> where possible.</li>
+                <li>Use <strong>different heights</strong> to reduce measurement ambiguity.</li>
+            </ul>
+            <div class="guidance-callout">
+                <span class="guidance-callout-icon" aria-hidden="true">i</span>
+                <span>Anchor geometry affects positioning quality. Avoid clustering anchors in one area or placing all of them at the same height.</span>
+            </div>
+        </section>
     </div>
-</div>
+</aside>
 </body>
 </html>
