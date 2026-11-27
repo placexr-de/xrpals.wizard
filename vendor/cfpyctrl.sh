@@ -7,6 +7,7 @@ set -e
 #  --port 5000 \
 #  --wsendpoint \
 #  --wsport 8765
+#  --ps "LPS|bcFlow2"
 
 docker run --rm -it \
   --device-cgroup-rule='c 189:* rmw' \
@@ -18,4 +19,4 @@ docker run --rm -it \
   -v /run/udev:/run/udev:ro \
   -v /dev:/dev \
   cf-pyctrl \
-  bash -ic "./cfpyctrl.sh $*"
+  bash -ic 'exec ./cfpyctrl.sh "$@"' cfpyctrl "$@"

@@ -9,8 +9,7 @@
 $ mvnw.cmd spring-boot:run
 
 # Linux
-$ ./mvnw spring-boot:run \
-  -Dspring-boot.run.arguments="--xrpals.uploads-dir=/home/user/swarmwalker/config-server/uploads-xrpalswizard"
+$ ./mvnw spring-boot:run
 ```
 
 or
@@ -41,9 +40,7 @@ xrpals.uploads-dir=./uploads
   -Dspring-boot.run.arguments="--xrpals.uploads-dir=/home/user/swarmwalker/config-server/uploads-xrpalswizard"
 ```
 
-- Via the executable JAR
-
-First build the application and then start it with the upload directory configured:
+- Via the executable JAR. First build the application and then start it with the upload directory configured:
 
 ```shell
 java -jar target/backend-0.0.1-SNAPSHOT.jar \
