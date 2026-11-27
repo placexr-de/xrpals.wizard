@@ -1,4 +1,43 @@
-# XR-PALS Wizard: User Manual
+# XR-PALS Wizard
+
+Setting up a Crazyflie Loco Positioning System (LPS) environment involves preparing a physical and virtual space, and checking anchor positions before synchronization. 
+The XR-PALS Wizard organizes the whole process into a guided workflow. 
+It supports the XR-PALS app as well as manual YAML upload, then provides a 3D view for reviewing the setup and allows to synchronize the virtual with the phyiscal LPS nodes via the Crazyflie. 
+Optional live headset tracking with the XR-PALS app helps inspect the positioning environment during setup.
+
+## User Manual
+
+### 1) Prepare the physical space
+
+Prepare the tracking hardware and use the recommended anchor arrangement as a placement reference.
+
+<a href="docs/wizard-step-1.png">
+  <img src="docs/wizard-step-1.png"
+       alt="Step 1: Prepare the virtual space"
+       style="zoom: 30%;">
+</a>
+
+### 2) Create the virtual space
+
+Re-create the space in XR-PALS and export the position data. 
+A manual YAML upload is available as an alternative.
+
+<a href="docs/wizard-step-2.png">
+  <img src="docs/wizard-step-2.png"
+       alt="Step 2: Create the virtual space"
+       style="zoom: 30%;">
+</a>
+
+
+### 3) Fine-tune and synchronize
+
+Review the imported anchor coordinates in the 3D preview, optionally inspect live headset pose data, and synchronize the anchor positions with the Crazyflie.
+
+<a href="docs/wizard-step-3.png">
+  <img src="docs/wizard-step-3.png"
+       alt="Step 3: Fine-tune and synchronize the environment"
+       style="zoom: 25%;">
+</a>
 
 ## Run the application
 
@@ -60,9 +99,13 @@ $ npm run dev
 Open the browser at:
 [`http://localhost:5173/`](http://localhost:5173/)
 
-### Start cfPyCtrl for Live-Tracking (optional)
+### Synchronization and Crazyfly Tracking
 
-Note that the service must terminated when a syncjob should be run.
+> **Prerequisite:** Before starting cf.PyCtrl, install it as a Docker container by following the [cf.PyControl installation instructions](https://github.com/UniAgent-CyberPhysicalAssets/cps.asset.crazyflie/tree/main/controller/cf.PyControl#installation).
+
+#### Start cfPyCtrl for Live-Tracking (optional)
+
+Install the cf.PyCtrl Docker container as described before and execute:
 
 ```shell
 ./vendor/cfpyctrl.sh \
@@ -71,6 +114,13 @@ Note that the service must terminated when a syncjob should be run.
   --wsendpoint \
   --wsport 8765
 ```
+
+#### Synchronization 
+
+Install the cf.PyCtrl Docker container as described before.
+
+> **Note:** Stop the cfPyCtrl service before starting an LPS synchronization job. The service must not be running while synchronization is performed.
+
 
 ## Testing
 
