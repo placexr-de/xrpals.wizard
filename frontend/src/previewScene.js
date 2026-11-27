@@ -1,7 +1,6 @@
 import * as THREE from "three";
-import {OrbitControls} from "three-stdlib";
+import {OrbitControls, PointerLockControls} from "three-stdlib";
 import {BlockWorld} from "./blockWorld.js";
-import {store} from "./store.js";
 
 export function setupWorld(scene) {
     const world = new THREE.Group();
@@ -53,8 +52,6 @@ export function createEmbeddedScene(container) {
     scene.add(xArrow);
     scene.add(zArrow);
     scene.add(yArrow);
-    scene.add(new THREE.GridHelper(10,10));
-
     const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
     camera.position.set(4, 6, 8);
     const renderer = new THREE.WebGLRenderer({
@@ -174,43 +171,205 @@ export function createScene() {
 
 let preview = null;
 
+function disposeObjectTree(root) {
+    root.traverse((object) => {
+        if (object.geometry) object.geometry.dispose();
+        if (object.material) {
+            const materials = Array.isArray(object.material) ? object.material : [object.material];
+            for (const material of materials) {
+                if (material.map) material.map.dispose();
+                material.dispose();
+            }
+        }
+    });
+}
+
+function clearGroupChildren(group) {
+    if (!group) return;
+    while (group.children.length > 0) {
+        const child = group.children[0];
+        group.remove(child);
+        disposeObjectTree(child);
+    }
+}
+
+function createAnchorLabel(id, x, y, z) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 160;
+    canvas.height = 72;
+    const context = canvas.getContext("2d");
+    if (!context) return null;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "rgba(255,255,255,0.96)";
+    context.strokeStyle = "rgba(54,145,91,0.72)";
+    context.lineWidth = 3;
+    context.beginPath();
+    context.roundRect(3, 3, canvas.width - 6, canvas.height - 6, 16);
+    context.fill();
+    context.stroke();
+    context.font = "700 34px system-ui, sans-serif";
+    context.fillStyle = "#247647";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(String(id), canvas.width / 2, canvas.height / 2 + 1);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.minFilter = THREE.LinearFilter;
+    const material = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        depthTest: false,
+        depthWrite: false
+    });
+    const sprite = new THREE.Sprite(material);
+    sprite.scale.set(0.25, 0.1125, 1);
+    sprite.position.set(x, y, z + 0.12);
+    sprite.renderOrder = 20;
+    return sprite;
+}
+
+function ensureXrPoseMarker() {
+    if (!preview || preview.xrPoseMarker) return preview?.xrPoseMarker ?? null;
+
+    const color = 0xf59e0b; // orange distinguishes XR tracking from green anchors and blue Crazyflie
+    const marker = new THREE.Group();
+    marker.name = "xr-head-pose-marker";
+    marker.visible = false;
+
+    const sphere = new THREE.Mesh(
+        new THREE.SphereGeometry(0.085, 18, 14),
+        new THREE.MeshStandardMaterial({
+            color,
+            emissive: 0x5a3200,
+            emissiveIntensity: 0.24,
+            roughness: 0.42,
+            metalness: 0.05
+        })
+    );
+    marker.add(sphere);
+
+    const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(0.13, 0.012, 7, 28),
+        new THREE.MeshBasicMaterial({color, transparent: true, opacity: 0.9})
+    );
+    ring.position.z = -0.055;
+    marker.add(ring);
+
+    // The arrow points along the local -Z axis; the incoming quaternion rotates it.
+    const heading = new THREE.ArrowHelper(
+        new THREE.Vector3(0, 0, -1),
+        new THREE.Vector3(0, 0, 0),
+        0.34,
+        color,
+        0.10,
+        0.065
+    );
+    marker.add(heading);
+
+    preview.blockWorld.world.add(marker);
+    preview.xrPoseMarker = marker;
+    return marker;
+}
+
 export function initAnchorPreview(store) {
     const container = document.getElementById("anchorPreviewCanvas");
     if (!container || preview) return;
 
-    const {scene, camera, renderer, controls} = createEmbeddedScene(container);
+    const {scene, camera, renderer, controls, resize} = createEmbeddedScene(container);
     const blockWorld = setupWorld(scene);
+
+    const anchorMarkersGroup = new THREE.Group();
+    anchorMarkersGroup.name = "anchor-markers";
+    blockWorld.world.add(anchorMarkersGroup);
+
+    preview = {
+        scene,
+        camera,
+        renderer,
+        controls,
+        resize,
+        blockWorld,
+        anchorMarkersGroup,
+        xrPoseMarker: null
+    };
 
     store.setState(state => ({
         ...state,
         scene: {
             ...state.scene,
-            blockWorld: blockWorld
+            blockWorld
         }
     }));
-    preview = {scene, camera, renderer, controls, blockWorld};
 
     animateEmbedded(renderer, scene, camera, controls);
 }
 
 export function renderAnchorPreview(anchors) {
-    if (anchors === undefined) {
-        return;
+    if (anchors === undefined || !preview) return;
+
+    const {anchorMarkersGroup} = preview;
+    clearGroupChildren(anchorMarkersGroup);
+
+    const entries = Object.entries(anchors ?? {}).sort((a, b) => Number(a[0]) - Number(b[0]));
+    for (const [id, position] of entries) {
+        const x = Number(position?.x);
+        const y = Number(position?.y);
+        const z = Number(position?.z);
+        if (![x, y, z].every(Number.isFinite)) continue;
+
+        const geometry = new THREE.BoxGeometry(0.125, 0.055, 0.02);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x35a765,
+            transparent: true,
+            opacity: 0.22,
+            side: THREE.DoubleSide
+        });
+        const anchor = new THREE.Mesh(geometry, material);
+        anchor.position.set(x, y, z);
+        anchor.name = `anchor-${id}`;
+        anchorMarkersGroup.add(anchor);
+
+        const edgeGeometry = new THREE.EdgesGeometry(geometry);
+        const edgeMaterial = new THREE.LineBasicMaterial({color: 0x26874e, linewidth: 2});
+        const edges = new THREE.LineSegments(edgeGeometry, edgeMaterial);
+        anchor.add(edges);
+
+        const label = createAnchorLabel(id, x, y, z);
+        if (label) anchorMarkersGroup.add(label);
     }
-    if (!preview) return;
+}
 
-    const {blockWorld} = preview;
-    blockWorld.clearAll();
+/** Update the orange XR headset marker with coordinates in the anchor/world frame. */
+export function setXrHeadPose(position, rotation = null) {
+    if (!preview || !position) return;
 
-    Object.entries(anchors).forEach(([id, pos]) => {
-        blockWorld.setBlock(
-            pos.x,
-            pos.y,
-            pos.z,
-            0.18,            // block size not used
-            grassMaterial
-        );
-    });
+    const x = Number(position.x);
+    const y = Number(position.y);
+    const z = Number(position.z);
+    if (![x, y, z].every(Number.isFinite)) return;
+
+    const marker = ensureXrPoseMarker();
+    if (!marker) return;
+
+    marker.position.set(x, y, z);
+    if (rotation && [rotation.x, rotation.y, rotation.z, rotation.w].every(value => Number.isFinite(Number(value)))) {
+        marker.quaternion.set(
+            Number(rotation.x),
+            Number(rotation.y),
+            Number(rotation.z),
+            Number(rotation.w)
+        ).normalize();
+    } else {
+        marker.quaternion.identity();
+    }
+    marker.visible = true;
+}
+
+export function setXrHeadPoseVisible(visible) {
+    if (preview?.xrPoseMarker) {
+        preview.xrPoseMarker.visible = Boolean(visible);
+    }
 }
 
 const droneEmaPos = [];
@@ -269,13 +428,18 @@ export function updateLiveAgentPosition([x, y, z], liveBlockIndex = 0, state, op
 }
 
 export function initLiveBlock(state) {
-
-    state.scene.blockWorld.clearLiveBlocks(state)
+    if (!state?.scene?.blockWorld) {
+        console.warn("Cannot initialize the Crazyflie marker before the 3D preview.");
+        return;
+    }
+    state.scene.liveBlock ??= [];
+    state.scene.liveBlockLabels ??= [];
+    state.scene.blockWorld.clearLiveBlocks(state);
 
     const labelOffset = 0.25; // height above drone in world Z
 
     for (let i = 0; i < 1; i++) {
-        const color = new THREE.Color().setHSL((0.6 + i * 0.1) % 1.0, 1.0, 0.5);
+        const color = new THREE.Color(0x3478f6);
 
         let droneObject;
         // const droneSize = 0.17;
@@ -286,7 +450,6 @@ export function initLiveBlock(state) {
             liveBlockMaterial
         );
 
-        // Example placement: offset each block in x-direction
         droneObject.position.set(0, 0, 1.5);
 
         state.scene.blockWorld.world.add(droneObject);

@@ -14,7 +14,7 @@
     <script type="module" src="./src/review-help.js" defer></script>
     <script type="application/javascript">var global = window;</script>
 </head>
-<body>
+<body class="review-page">
 <div class="background-grid" aria-hidden="true"></div>
 
 <main class="center-wrapper">
@@ -55,12 +55,17 @@
             <section class="review-left-column wizard-column-left" aria-label="Environment and anchors">
                 <section class="world-preview" aria-label="3D environment preview">
                     <div id="anchorPreviewCanvas" class="anchor-preview-canvas"></div>
+                    <div class="scene-legend" aria-label="3D marker legend">
+                        <span><i class="scene-legend-dot anchor" aria-hidden="true"></i>Anchors</span>
+                        <span><i class="scene-legend-dot crazyflie" aria-hidden="true"></i>Crazyflie</span>
+                        <span><i class="scene-legend-dot xr-headset" aria-hidden="true"></i>XR headset</span>
+                    </div>
                 </section>
 
                 <section class="panel anchor-panel" aria-labelledby="anchorsTitle">
                     <div class="panel-heading-line anchor-panel-heading">
                         <div>
-                            <p class="step-kicker">ENVIRONMENT DATA</p>
+                            <p class="step-kicker">XR-PALS / LPS</p>
                             <h2 id="anchorsTitle">Anchor positions</h2>
                         </div>
                         <div class="anchor-count-pill"><span id="summaryAnchorCount">0</span><span>anchors</span></div>
@@ -136,6 +141,83 @@
                             <input id="syncTimeout" class="config-input" type="number"
                                    value="60000" min="1000" step="1000" placeholder="Timeout ms">
                         </div>
+                    </div>
+                </section>
+
+
+                <section class="panel mqtt-panel" aria-labelledby="xrTrackingTitle">
+                    <div class="panel-heading-line mqtt-panel-heading">
+                        <div>
+                            <p class="step-kicker">XR</p>
+                            <h2 id="xrTrackingTitle">Headset tracking</h2>
+                        </div>
+                        <span id="mqttConnectionBadge" class="mqtt-status-badge disconnected">
+                            <i class="mqtt-status-dot" aria-hidden="true"></i>
+                            <span id="mqttConnectionStatus">Disconnected</span>
+                        </span>
+                    </div>
+
+                    <div class="mqtt-settings-grid">
+                        <div class="config-field">
+                            <label class="config-label" for="mqttBrokerUrl">Broker WebSocket URL</label>
+                            <input id="mqttBrokerUrl" class="config-input" type="text"
+                                   value="ws://localhost:9001" placeholder="ws://192.168.1.20:9001"
+                                   autocomplete="off" spellcheck="false">
+                        </div>
+                        <div class="config-field">
+                            <label class="config-label" for="mqttTopic">MQTT topic</label>
+                            <input id="mqttTopic" class="config-input" type="text"
+                                   value="xr/head-pose" placeholder="xr/head-pose"
+                                   autocomplete="off" spellcheck="false">
+                        </div>
+                    </div>
+
+                    <p id="mqttConnectionNote" class="mqtt-connection-note">
+                        Use the broker's MQTT-over-WebSocket listener (ws:// or wss://), not its raw TCP MQTT port such as 1883.
+                    </p>
+                    <p id="mqttConnectionMessage" class="mqtt-connection-message" role="status">Not connected.</p>
+
+                    <details class="mqtt-credentials">
+                        <summary>Optional broker credentials</summary>
+                        <div class="mqtt-credentials-grid">
+                            <div class="config-field">
+                                <label class="config-label" for="mqttUsername">Username</label>
+                                <input id="mqttUsername" class="config-input" type="text" autocomplete="username">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label" for="mqttPassword">Password</label>
+                                <input id="mqttPassword" class="config-input" type="password" autocomplete="current-password">
+                            </div>
+                        </div>
+                    </details>
+
+                    <div class="mqtt-connect-actions">
+                        <p id="mqttPoseMessageStatus" class="mqtt-pose-message-status" aria-live="polite">Waiting for the first pose message.</p>
+                        <div class="mqtt-connect-buttons">
+                            <button id="mqttConnectBtn" class="btn btn-primary" type="button">Connect</button>
+                            <button id="mqttDisconnectBtn" class="btn btn-secondary" type="button" hidden>Disconnect</button>
+                        </div>
+                    </div>
+
+                    <div class="mqtt-live-pose" aria-label="Latest XR headset pose" aria-live="polite">
+                        <div class="mqtt-live-pose-heading">
+                            <span>Latest position</span>
+                            <span class="mqtt-pose-color-key"><i aria-hidden="true"></i>XR headset</span>
+                        </div>
+                        <div class="mqtt-position-grid">
+                            <div class="mqtt-position-value"><span>X</span><strong id="mqttPositionX">—</strong><small>m</small></div>
+                            <div class="mqtt-position-value"><span>Y</span><strong id="mqttPositionY">—</strong><small>m</small></div>
+                            <div class="mqtt-position-value"><span>Z</span><strong id="mqttPositionZ">—</strong><small>m</small></div>
+                        </div>
+                        <div class="mqtt-metadata-grid">
+                            <div><span>Last message</span><strong id="mqttPoseTimestamp">Never</strong></div>
+                            <div><span>Messages received</span><strong id="mqttMessageCount">0</strong></div>
+                        </div>
+                        <details class="mqtt-raw-details">
+                            <summary>Orientation and latest payload</summary>
+                            <div class="mqtt-rotation-row"><span>Quaternion (x, y, z, w)</span><code id="mqttRotationValue">—</code></div>
+                            <pre id="mqttRawPayload">No payload received yet.</pre>
+                        </details>
                     </div>
                 </section>
 

@@ -1,105 +1,142 @@
 import {renderAnchorPreview} from "./previewScene.js";
 import {
-    buildSyncDetails, confirmSyncBtn,
-    renderAnchorsTable, reviewBackBtn,
-    setSyncState,
+    buildSyncDetails,
+    confirmSyncBtn,
+    renderAnchorsTable,
+    reviewBackBtn,
+    setSyncState
 } from "./review.js";
 
 const STORAGE_KEY = "xr-pals-wizard-state";
+
 export const initialState = {
     anchors: {
         0: {x: 0.0, y: 0.0, z: 0.0}
     },
     upload: {
-        tmpFile: "_default.yaml",
+        tmpFile: "_default.yaml"
     },
     scene: {
         blockWorld: null,
         liveBlock: [],
-        liveBlockLabels: [],
+        liveBlockLabels: []
     },
     job: {
         currentId: null,
         ack: null,
         result: null
-    },
-}
+    }
+};
 
 export const store = createStore(initialState);
-console.log("store", store.getState())
 
+let lastRenderedAnchors = store.getState().anchors;
 store.subscribe((state) => {
-    renderAnchorsTable(state.anchors);
-    renderAnchorPreview(state.anchors);
+    if (state.anchors !== lastRenderedAnchors) {
+        lastRenderedAnchors = state.anchors;
+        renderAnchorsTable(state.anchors ?? {});
+        renderAnchorPreview(state.anchors ?? {});
+    }
 });
 
 store.subscribe((state) => {
-
     const job = state.job;
-    if (job === null) {
-        return;
-    }
+    if (!job) return;
 
     if (job.result === null && job.ack !== null) {
-        setSyncState("running", "Synchronization is running");
+        if (confirmSyncBtn) confirmSyncBtn.disabled = true;
+        if (reviewBackBtn) reviewBackBtn.disabled = true;
+        setSyncState("running", "Synchronization running", `Job ${job.currentId ?? job.ack?.jobId ?? "-"} accepted. Waiting for updates ...`);
         return;
     }
 
-    if (job.result !== null && job.result.status === "SUCCESS") {
-        const details = buildSyncDetails(job.result);
-        setSyncState("success", "Synchronization complete", details);
-    }
-    const errorStates = ["FAILED", "EXCEPTION", "TIMEOUT"];
-    if (job.result !== null && errorStates.includes(job.result.status)) {
-        const details = buildSyncDetails(job.result);
-        setSyncState("error", "Synchronization failed", details);
+    if (job.result?.status === "RUNNING" || job.result?.status === "QUEUED") {
+        if (confirmSyncBtn) confirmSyncBtn.disabled = true;
+        if (reviewBackBtn) reviewBackBtn.disabled = true;
+        setSyncState("running", "Synchronization running", buildSyncDetails(job.result));
+        return;
     }
 
-    if(confirmSyncBtn !== null) {
-        confirmSyncBtn.disabled = false;
+    if (job.result?.status === "SUCCESS") {
+        setSyncState("success", "Synchronization complete", buildSyncDetails(job.result));
+    } else if (["FAILED", "EXCEPTION", "TIMEOUT"].includes(job.result?.status)) {
+        setSyncState("error", "Synchronization failed", buildSyncDetails(job.result));
     }
-    if(reviewBackBtn!==null) {
-        reviewBackBtn.disabled = false;
-    }
+
+    if (confirmSyncBtn) confirmSyncBtn.disabled = false;
+    if (reviewBackBtn) reviewBackBtn.disabled = false;
 });
 
-export function createStore(initialState) {
-    let state = loadState() ?? structuredClone(initialState);
+export function createStore(defaultState) {
+    const loaded = loadState();
+    let state = loaded ? mergeState(defaultState, loaded) : structuredClone(defaultState);
     const listeners = new Set();
 
-    function saveState() {
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    function mergeState(base, saved) {
+        return {
+            ...structuredClone(base),
+            ...saved,
+            anchors: saved.anchors ?? structuredClone(base.anchors),
+            upload: {...base.upload, ...(saved.upload ?? {})},
+            scene: {...base.scene, ...(saved.scene ?? {}), blockWorld: null, liveBlock: [], liveBlockLabels: []},
+            job: {...base.job, ...(saved.job ?? {})}
+        };
     }
 
     function loadState() {
-        const raw = sessionStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : null;
+        try {
+            const raw = sessionStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch (error) {
+            console.warn("Could not load wizard state from sessionStorage:", error);
+            return null;
+        }
+    }
+
+    function createPersistenceSnapshot(currentState) {
+        const scene = currentState.scene ?? {};
+        return {
+            ...currentState,
+            scene: {
+                ...scene,
+                blockWorld: null,
+                liveBlock: [],
+                liveBlockLabels: []
+            }
+        };
+    }
+
+    function saveState() {
+        try {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(createPersistenceSnapshot(state)));
+        } catch (error) {
+            console.warn("Could not persist wizard state:", error);
+        }
+    }
+
+    function notifyListeners() {
+        for (const listener of listeners) listener(state);
     }
 
     return {
         getState: () => state,
 
         setState: (patch) => {
-            const next =
-                typeof patch === "function"
-                    ? patch(state)
-                    : {...state, ...patch};
-
+            const next = typeof patch === "function" ? patch(state) : {...state, ...patch};
             state = next;
-
             saveState();
-
-            for (const fn of listeners) fn(state);
+            notifyListeners();
         },
 
-        subscribe: (fn) => {
-            listeners.add(fn);
-            return () => listeners.delete(fn);
+        subscribe: (listener) => {
+            listeners.add(listener);
+            return () => listeners.delete(listener);
         },
 
         reset: () => {
-            state = structuredClone(initialState);
+            state = structuredClone(defaultState);
             saveState();
+            notifyListeners();
         }
     };
 }
