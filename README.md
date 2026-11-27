@@ -99,7 +99,7 @@ $ npm run dev
 Open the browser at:
 [`http://localhost:5173/`](http://localhost:5173/)
 
-### Synchronization and Crazyfly Tracking
+### Synchronization and Crazyflie Tracking
 
 > **Prerequisite:** Before starting cf.PyCtrl, install it as a Docker container by following the [cf.PyControl installation instructions](https://github.com/UniAgent-CyberPhysicalAssets/cps.asset.crazyflie/tree/main/controller/cf.PyControl#installation).
 
